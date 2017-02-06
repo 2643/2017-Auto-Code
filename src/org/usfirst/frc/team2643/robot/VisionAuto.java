@@ -1,5 +1,7 @@
 package org.usfirst.frc.team2643.robot;
 
+import org.usfirst.frc.team2643.deprecated.VisionAutoAlign;
+
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
 

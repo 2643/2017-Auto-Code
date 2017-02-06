@@ -1,6 +1,7 @@
 
 package org.usfirst.frc.team2643.robot;
 
+import org.usfirst.frc.team2643.deprecated.VisionNarrowDown;
 import org.usfirst.frc.team2643.robot.subsystems.ExampleSubsystem;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
