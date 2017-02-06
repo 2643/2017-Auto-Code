@@ -3,6 +3,12 @@ package org.usfirst.frc.team2643.robot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
 
+/**
+ * DEPRECATED METHOD
+ * @author Adley
+ */
+
+
 public class VisionAuto 
 {
 	static NetworkTable table = NetworkTable.getTable("Vision");

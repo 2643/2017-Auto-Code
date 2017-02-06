@@ -19,36 +19,35 @@ import edu.wpi.first.wpilibj.networktables.NetworkTable;
  * creating this project, you must also update the manifest file in the resource
  * directory.
  */
-public class Robot extends IterativeRobot 
+public class Robot extends IterativeRobot
 {
 
 	public static final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
 	public static OI oi;
-	
+
 	NetworkTable table = NetworkTable.getTable("Vision");
-	
+
 	Command autonomousCommand;
-	//int baut = 230400;
 	
-	//SerialPort arduino = new SerialPort(baut, SerialPort.Port.kUSB1);
-	
+	//** Arduino code
+	// int baut = 230400;
+	// SerialPort arduino = new SerialPort(baut, SerialPort.Port.kUSB1);
+
 	Joystick stick = new Joystick(0);
-	
+
 	static Talon lBack = new Talon(2);
 	static Talon lFront = new Talon(3);
 	static Spark rBack = new Spark(0);
 	static Spark rFront = new Spark(1);
-	
-	//RobotDrive drive = new RobotDrive(RobotMap.lFront, RobotMap.lBack, RobotMap.rFront, RobotMap.rBack);
 
 	/**
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
 	 */
 	@Override
-	public void robotInit() {
+	public void robotInit()
+	{
 		oi = new OI();
-		// chooser.addObject("My Auto", new MyAutoCommand());
 	}
 
 	/**
@@ -57,12 +56,14 @@ public class Robot extends IterativeRobot
 	 * the robot is disabled.
 	 */
 	@Override
-	public void disabledInit() {
+	public void disabledInit()
+	{
 
 	}
 
 	@Override
-	public void disabledPeriodic() {
+	public void disabledPeriodic()
+	{
 		Scheduler.getInstance().run();
 	}
 
@@ -78,16 +79,8 @@ public class Robot extends IterativeRobot
 	 * to the switch structure below with additional strings & commands.
 	 */
 	@Override
-	public void autonomousInit() {
-
-		/*
-		 * String autoSelected = SmartDashboard.getString("Auto Selector",
-		 * "Default"); switch(autoSelected) { case "My Auto": autonomousCommand
-		 * = new MyAutoCommand(); break; case "Default Auto": default:
-		 * autonomousCommand = new ExampleCommand(); break; }
-		 */
-
-		// schedule the autonomous command (example)
+	public void autonomousInit()
+	{
 		if (autonomousCommand != null)
 			autonomousCommand.start();
 	}
@@ -96,16 +89,14 @@ public class Robot extends IterativeRobot
 	 * This function is called periodically during autonomous
 	 */
 	@Override
-	public void autonomousPeriodic() {
+	public void autonomousPeriodic()
+	{
 		Scheduler.getInstance().run();
 	}
 
 	@Override
-	public void teleopInit() {
-		// This makes sure that the autonomous stops running when
-		// teleop starts running. If you want the autonomous to
-		// continue until interrupted by another command, remove
-		// this line or comment it out.
+	public void teleopInit() 
+	{
 		if (autonomousCommand != null)
 			autonomousCommand.cancel();
 	}
@@ -114,21 +105,29 @@ public class Robot extends IterativeRobot
 	 * This function is called periodically during operator control
 	 */
 	@Override
-	public void teleopPeriodic() 
+	public void teleopPeriodic()
 	{
 		Scheduler.getInstance().run();
-		
-		//tank drive code
+
+		// tank drive code
 		lBack.set(-stick.getRawAxis(1));
 		lFront.set(-stick.getRawAxis(1));
 		rBack.set(stick.getRawAxis(3));
 		rFront.set(stick.getRawAxis(3));
-		
+
 		//vision assisted auto
 		if(stick.getRawButton(4))
 		{
-			//System.out.println("Enabled auto assist!");
-			VisionAuto.moveFunction(0);
+			boolean comp = VisionNarrowDown.narrowDownArray("Height", 50);
+			if(comp)
+			{
+				double[] tmp = VisionNarrowDown.getArray();
+				System.out.println(tmp[0] + "   " + tmp[1]);
+			}
+			else
+			{
+				System.out.println("Cannot proceed as compensation hasn't been reached");
+			}
 		}
 	}
 
@@ -136,7 +135,8 @@ public class Robot extends IterativeRobot
 	 * This function is called periodically during test mode
 	 */
 	@Override
-	public void testPeriodic() {
+	public void testPeriodic()
+	{
 		LiveWindow.run();
 	}
 }
