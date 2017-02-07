@@ -10,9 +10,17 @@ import edu.wpi.first.wpilibj.networktables.NetworkTable;
 public class VisionNarrowDown
 {
 	static NetworkTable table = NetworkTable.getTable("Vision");
+	static double[] centerXVal = new double[2];
+	static double[] nArray = new double[2];
+	
 	private static double[] values = new double[0];
 	private static double[] tableValue = new double[2];
+	private static int[] tableElements = new int[2];
 	
+	private static int element1 = 0;
+	private static int element2 = 0;
+	
+	static double[] cX = table.getNumberArray("CenterX", values);
 	/*
 	 * TODO:
 	 *	create private methods and add get methods in order to return values for vision assisted auto code
@@ -25,10 +33,16 @@ public class VisionNarrowDown
 		double[] a = table.getNumberArray(tableName, values);
 		double temp = largestValue(a);
 		double temp2 = secondLargestValue(a, temp);
-		System.out.println(temp2);
-		if(temp2 > (temp - compensation) && temp2 < (temp + compensation))
+		System.out.println("largest Value:" + temp);
+		System.out.println("second largest value: " + temp2);
+		if(temp2 > (temp - compensation) && temp2 < (temp + compensation) && (element1 < a.length || element2 < a.length))
 		{
-			narrowArray(temp, temp2);
+			centerXVal[0] = cX[element1];
+			centerXVal[1] = cX[element2];
+			nArray[0] = temp;
+			nArray[1] = temp2;
+			//narrowArray(temp, temp2);
+			//narrowElementsOfArray(element1, element2);
 			System.out.println("Found values");
 			return true;
 		}
@@ -40,6 +54,18 @@ public class VisionNarrowDown
 		return tableValue;
 	}
 	
+	public static double[] centerXValues()
+	{
+		double[] narrowedTableValue = new double[2]; 
+		
+		return narrowedTableValue;
+	}
+	
+	public static int[] getElement()
+	{
+		return tableElements;
+	}
+	
 	private static double largestValue(double[] table)
 	{
 		int largestVal = 0;
@@ -49,6 +75,9 @@ public class VisionNarrowDown
 			if(table[largestVal] < table[x])
 				largestVal = x;
 		}
+		
+		element1 = largestVal;
+		//System.out.println("element2: " + element1);
 		
 		return table[largestVal];
 	}
@@ -65,6 +94,8 @@ public class VisionNarrowDown
 			}	
 		}
 		
+		element2 = secondLargestVal;
+		//System.out.println("element2: " + element2);
 		return table[secondLargestVal];
 	}
 	
@@ -72,5 +103,11 @@ public class VisionNarrowDown
 	{
 		tableValue[0] = firstNum;
 		tableValue[1] = secondNum;
+	}
+	
+	private static void narrowElementsOfArray(int firstEl, int secondEl)
+	{
+		tableElements[0] = firstEl;
+		tableElements[1] = secondEl;
 	}
 }

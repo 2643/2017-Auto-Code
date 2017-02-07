@@ -123,6 +123,7 @@ public class Robot extends IterativeRobot
 			{
 				double[] tmp = VisionNarrowDown.getArray();
 				System.out.println(tmp[0] + "   " + tmp[1]);
+				VisionAutoMovement.trackingRetro(VisionNarrowDown.centerXVal, 25);
 			}
 			else
 			{

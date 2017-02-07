@@ -1,7 +1,5 @@
 package org.usfirst.frc.team2643.deprecated;
 
-import org.usfirst.frc.team2643.robot.Robot;
-
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
 
 /**
@@ -101,12 +99,12 @@ public class VisionAutoAlign
 	 * @param direction
 	 */
 	public static void moveDirection(int direction)
-	{
+	{/*
 		Robot.lBack.set(direction * speed);
 		Robot.lFront.set(direction * speed);
 		Robot.rBack.set(direction * speed);
 		Robot.rFront.set(direction * speed);
 		// System.out.println("Directions for left are: " + (direction * -speed)
-		// + " Direction for right are: " + (direction * speed));
+		// + " Direction for right are: " + (direction * speed));*/
 	}
 }

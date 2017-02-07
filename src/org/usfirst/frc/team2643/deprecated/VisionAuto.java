@@ -1,7 +1,5 @@
 package org.usfirst.frc.team2643.deprecated;
 
-import org.usfirst.frc.team2643.robot.Robot;
-
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
 
@@ -9,7 +7,6 @@ import edu.wpi.first.wpilibj.networktables.NetworkTable;
  * DEPRECATED METHOD
  * @author Adley
  */
-
 
 public class VisionAuto 
 {
@@ -43,10 +40,11 @@ public class VisionAuto
 				{
 					time.stop();
 					time.reset();
+					/*
 					Robot.lBack.set(0);
 					Robot.lFront.set(0);
 					Robot.rBack.set(0);
-					Robot.rFront.set(0);
+					Robot.rFront.set(0);*/
 					state = 0;
 				}
 				break;
