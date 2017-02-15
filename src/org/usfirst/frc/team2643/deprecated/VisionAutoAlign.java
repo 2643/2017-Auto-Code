@@ -1,7 +1,5 @@
 package org.usfirst.frc.team2643.deprecated;
 
-import edu.wpi.first.wpilibj.networktables.NetworkTable;
-
 /**
  * DEPRECATED METHOD
  * @author Adley
@@ -9,7 +7,7 @@ import edu.wpi.first.wpilibj.networktables.NetworkTable;
 
 public class VisionAutoAlign
 {
-	static NetworkTable table = NetworkTable.getTable("Vision");
+	/*static NetworkTable table = NetworkTable.getTable("Vision");
 
 	private static double[] values = new double[0];
 	private static double[] cX = table.getNumberArray("CenterX", values);
@@ -98,13 +96,13 @@ public class VisionAutoAlign
 	 * 
 	 * @param direction
 	 */
-	public static void moveDirection(int direction)
-	{/*
+	/*public static void moveDirection(int direction)
+	{
 		Robot.lBack.set(direction * speed);
 		Robot.lFront.set(direction * speed);
 		Robot.rBack.set(direction * speed);
 		Robot.rFront.set(direction * speed);
 		// System.out.println("Directions for left are: " + (direction * -speed)
-		// + " Direction for right are: " + (direction * speed));*/
-	}
+		// + " Direction for right are: " + (direction * speed));
+	}*/
 }

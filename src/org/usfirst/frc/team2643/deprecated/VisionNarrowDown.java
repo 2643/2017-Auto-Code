@@ -1,26 +1,25 @@
-package org.usfirst.frc.team2643.robot;
-
-import edu.wpi.first.wpilibj.networktables.NetworkTable;
+package org.usfirst.frc.team2643.deprecated;
 
 /**
- * Reintroduced code to eliminate not needed elements also introduces a
- * compensation function in order to check if there is enough
+ * DEPREVATED
  * 
  * @author Adley
  *
  */
 public class VisionNarrowDown
 {
-	static NetworkTable table = NetworkTable.getTable("Vision");
+	/*public 
 	static double[] centerXVal = new double[2];
 	static double[] nArray = new double[2];
-
-	private static double[] values = new double[0];
+	static double[] values = new double[0];
+	
 	private static double[] tableValue = new double[2];
 	private static double[] returnTable = new double[2];
 
 	private static int element1 = 0;
 	private static int element2 = 0;
+	
+	private static double ratioSize = 0;
 
 	private static String returnName = "CenterX";
 	/*
@@ -30,9 +29,10 @@ public class VisionNarrowDown
 	 * that
 	 */
 
-	public static boolean narrowDownArray(String tableName, int compensation)
+	/*public static boolean narrowDownArray(String tableName, int compensation//, String returnTable//
+			)
 	{
-		double[] a = table.getNumberArray(tableName, values);
+		//double[] a = table.getNumberArray(tableName, values);
 		boolean allowMovement = false;
 
 		if (a.length >= 2)
@@ -43,12 +43,6 @@ public class VisionNarrowDown
 			if (temp2 >= (temp - compensation) && temp2 <= (temp + compensation)
 					&& (element1 < a.length || element2 < a.length))
 			{
-
-				/*
-				 * centerXVal[0] = cX[element1]; centerXVal[1] = cX[element2];
-				 * nArray[0] = temp; nArray[1] = temp2;
-				 */
-
 				narrowArray(temp, temp2);
 				narrowElementsOfArray(returnName, element1, element2);
 				System.out.println("**Found values");
@@ -59,25 +53,17 @@ public class VisionNarrowDown
 		}
 		return allowMovement;
 	}
-
-	public static double[] getArray()
+	
+	/*public static double[] getArray(String tableName, int compensation)
 	{
-		return tableValue;
-	}
-
-	public static double[] centerXValues()
-	{
-		double[] narrowedTableValue = new double[2];
-
-		return narrowedTableValue;
-	}
-
-	public static double[] getReturnArray()
-	{
-		return returnTable;
-	}
-
-	private static double largestValue(double[] table)
+		double[] a = table.getNumberArray
+		
+		return ;
+	}*/
+	/*
+	 * May not be used...
+	 */
+	/*private static double largestValue(double[] table)
 	{
 		int largestVal = 0;
 
@@ -88,7 +74,7 @@ public class VisionNarrowDown
 		}
 
 		element1 = largestVal;
-
+		System.out.println(table[largestVal]);
 		return table[largestVal];
 	}
 
@@ -105,7 +91,9 @@ public class VisionNarrowDown
 		}
 
 		element2 = secondLargestVal;
-		// System.out.println("element2: " + element2);
+
+		System.out.println(table[secondLargestVal]);
+		
 		return table[secondLargestVal];
 	}
 
@@ -120,5 +108,5 @@ public class VisionNarrowDown
 		double[] a = table.getNumberArray(tableName, values);
 		returnTable[0] = a[firstEl];
 		returnTable[1] = a[secondEl];
-	}
+	}*/
 }

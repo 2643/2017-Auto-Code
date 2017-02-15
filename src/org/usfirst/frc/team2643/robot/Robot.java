@@ -1,16 +1,18 @@
 
 package org.usfirst.frc.team2643.robot;
 
+
+import org.usfirst.frc.team2643.deprecated.VisionNarrowRatio;
 import org.usfirst.frc.team2643.robot.subsystems.ExampleSubsystem;
 
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Spark;
-import edu.wpi.first.wpilibj.Talon;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import edu.wpi.first.wpilibj.networktables.NetworkTable;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -21,25 +23,35 @@ import edu.wpi.first.wpilibj.networktables.NetworkTable;
  */
 public class Robot extends IterativeRobot
 {
-
 	public static final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
 	public static OI oi;
-
-	NetworkTable table = NetworkTable.getTable("Vision");
-
+	
 	Command autonomousCommand;
 	
-	//** Arduino code
+	// ** Arduino code
 	// int baut = 230400;
 	// SerialPort arduino = new SerialPort(baut, SerialPort.Port.kUSB1);
 
 	Joystick stick = new Joystick(0);
 
-	static Talon lBack = new Talon(2);
-	static Talon lFront = new Talon(3);
+	static Spark lBack = new Spark(2);
+	static Spark lFront = new Spark(3);
 	static Spark rBack = new Spark(0);
 	static Spark rFront = new Spark(1);
 
+	static Encoder lEncoder = new Encoder(1, 2);
+	static Encoder rEncoder = new Encoder(3, 4);
+
+	private static int vision = 0;
+	private static int stream = 1;
+	
+	static boolean toggle = true;
+	
+	static int state = 0;
+	
+	static boolean isAuto = true;
+	static Timer time = new Timer();
+	
 	/**
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
@@ -48,6 +60,8 @@ public class Robot extends IterativeRobot
 	public void robotInit()
 	{
 		oi = new OI();
+		//UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
+		//camera.setResolution(320, 240);
 	}
 
 	/**
@@ -83,6 +97,8 @@ public class Robot extends IterativeRobot
 	{
 		if (autonomousCommand != null)
 			autonomousCommand.start();
+			VisionCameraStatus.autoModeStatus(1);
+		
 	}
 
 	/**
@@ -91,14 +107,21 @@ public class Robot extends IterativeRobot
 	@Override
 	public void autonomousPeriodic()
 	{
-		Scheduler.getInstance().run();
+		while(isAutonomous())
+		{
+			VisionNarrowRatio.narrowRatio(3.0, 0.5);
+		}
 	}
 
 	@Override
-	public void teleopInit() 
+	public void teleopInit()
 	{
 		if (autonomousCommand != null)
 			autonomousCommand.cancel();
+		
+		lEncoder.reset();
+		rEncoder.reset();
+		VisionCameraStatus.autoModeStatus(0);
 	}
 
 	/**
@@ -107,27 +130,63 @@ public class Robot extends IterativeRobot
 	@Override
 	public void teleopPeriodic()
 	{
-		Scheduler.getInstance().run();
-
-		// tank drive code
-		lBack.set(-stick.getRawAxis(1));
-		lFront.set(-stick.getRawAxis(1));
-		rBack.set(stick.getRawAxis(3));
-		rFront.set(stick.getRawAxis(3));
-
-		//vision assisted auto
-		if(stick.getRawButton(4))
+		while (isEnabled() && isOperatorControl())
 		{
-			boolean comp = VisionNarrowDown.narrowDownArray("Height", 50);
-			if(comp)
+			// vision assisted auto
+			isAuto = false;
+			boolean cameraToggle = true;
+			boolean streamToggle = true;
+			if (stick.getRawButton(4))
 			{
-				double[] tmp = VisionNarrowDown.getArray();
-				System.out.println(tmp[0] + "   " + tmp[1]);
-				VisionAutoMovement.trackingRetro(VisionNarrowDown.centerXVal, 25);
+				while(toggle)
+				{
+					if(stick.getRawButton(2))
+						toggle = false;
+					if(cameraToggle)
+					{
+						System.out.println("toggling once");
+						VisionCameraStatus.cameraStatus(1);
+						cameraToggle = false;
+						try
+						{
+							Thread.sleep(3000);
+						}
+						catch (InterruptedException e)
+						{
+							e.printStackTrace();
+						}
+					}
+					VisionAutoMovement.trackingRetro(VisionNarrowHeights.buidArray("CenterX"), 75, true);
+					
+				}
+				//VisionNarrowHeights.buidArray("Height");
+				//System.out.println("Running");
+			}
+			else if(stick.getRawButton(6))
+			{
+				VisionCameraStatus.cameraStatus(1);
+			}
+			else if(stick.getRawButton(3))
+			{
+				if(streamToggle)
+				{
+					VisionCameraStatus.cameraStatus(0);
+					streamToggle = false;
+				}	
+			}
+			else if(stick.getRawButton(1))
+			{
+				toggle = true;
 			}
 			else
 			{
-				System.out.println("Cannot proceed as compensation hasn't been reached");
+				streamToggle = true;
+				cameraToggle = true;
+				lBack.set(-stick.getRawAxis(1));
+				lFront.set(-stick.getRawAxis(1));
+				rBack.set(stick.getRawAxis(3));
+				rFront.set(stick.getRawAxis(3));
+				//System.out.println("Left Encoder: " + lEncoder.get() + "   " + "Right Encoder: " + rEncoder.get());
 			}
 		}
 	}
