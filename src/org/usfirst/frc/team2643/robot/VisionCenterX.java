@@ -1,12 +1,10 @@
 package org.usfirst.frc.team2643.robot;
 
-import org.usfirst.frc.team2643.deprecated.VisionNarrowRatio;
-
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
 
 public class VisionCenterX
 {
-	static NetworkTable table = VisionNarrowRatio.table;
+	static NetworkTable table = VisionAuto.table;
 	static double[] centerX = table.getNumberArray("CenterX", new double[0]);
 	
 	public static double[] returnCenterX(int[] elements)

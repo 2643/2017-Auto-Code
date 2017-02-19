@@ -2,12 +2,14 @@
 package org.usfirst.frc.team2643.robot;
 
 
-import org.usfirst.frc.team2643.deprecated.VisionNarrowRatio;
+import java.text.NumberFormat;
+
 import org.usfirst.frc.team2643.robot.subsystems.ExampleSubsystem;
 
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
@@ -29,8 +31,8 @@ public class Robot extends IterativeRobot
 	Command autonomousCommand;
 	
 	// ** Arduino code
-	// int baut = 230400;
-	// SerialPort arduino = new SerialPort(baut, SerialPort.Port.kUSB1);
+	final static int baut = 230400;
+	static SerialPort arduino = new SerialPort(baut, SerialPort.Port.kUSB);
 
 	Joystick stick = new Joystick(0);
 
@@ -52,6 +54,15 @@ public class Robot extends IterativeRobot
 	static boolean isAuto = true;
 	static Timer time = new Timer();
 	
+	static NumberFormat f = NumberFormat.getInstance();
+	static double myNumber = 0;
+	static double tmp = 0;
+
+	static double gyroVal = 0;
+	static boolean gyroToggle = true;
+
+	static int x = 0;
+	
 	/**
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
@@ -60,8 +71,6 @@ public class Robot extends IterativeRobot
 	public void robotInit()
 	{
 		oi = new OI();
-		//UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
-		//camera.setResolution(320, 240);
 	}
 
 	/**
@@ -97,6 +106,8 @@ public class Robot extends IterativeRobot
 	{
 		if (autonomousCommand != null)
 			autonomousCommand.start();
+			lEncoder.reset();
+			rEncoder.reset();
 			VisionCameraStatus.autoModeStatus(1);
 		
 	}
@@ -109,7 +120,7 @@ public class Robot extends IterativeRobot
 	{
 		while(isAutonomous())
 		{
-			VisionNarrowRatio.narrowRatio(3.0, 0.5);
+			VisionAuto.positionForAuto("Right");
 		}
 	}
 
@@ -136,15 +147,17 @@ public class Robot extends IterativeRobot
 			isAuto = false;
 			boolean cameraToggle = true;
 			boolean streamToggle = true;
+			
 			if (stick.getRawButton(4))
 			{
+				//starts vision
 				while(toggle)
 				{
 					if(stick.getRawButton(2))
 						toggle = false;
 					if(cameraToggle)
 					{
-						System.out.println("toggling once");
+						//System.out.println("toggling once");
 						VisionCameraStatus.cameraStatus(1);
 						cameraToggle = false;
 						try
@@ -156,18 +169,18 @@ public class Robot extends IterativeRobot
 							e.printStackTrace();
 						}
 					}
-					VisionAutoMovement.trackingRetro(VisionNarrowHeights.buidArray("CenterX"), 75, true);
-					
+					//System.out.println("Vision");
+					VisionAuto.startVision();
 				}
-				//VisionNarrowHeights.buidArray("Height");
-				//System.out.println("Running");
 			}
 			else if(stick.getRawButton(6))
 			{
+				//just start the vision no scanner
 				VisionCameraStatus.cameraStatus(1);
 			}
 			else if(stick.getRawButton(3))
 			{
+				//starts stream
 				if(streamToggle)
 				{
 					VisionCameraStatus.cameraStatus(0);
@@ -176,17 +189,37 @@ public class Robot extends IterativeRobot
 			}
 			else if(stick.getRawButton(1))
 			{
+				//reseters
 				toggle = true;
+				gyroToggle = true;
 			}
+			/*else if(stick.getRawButton(5))
+			{
+				//gyro drive
+				while (stick.getRawButton(5))
+				{
+					
+					String val = arduino.readString();
+					if (gyroToggle)
+					{
+						//System.out.println("once right?");
+						tmp = 0;
+						x = 0;
+						gyroToggle = false;
+					}
+
+					GyroMaster.gyroMaster(val);
+				}
+			}*/
 			else
 			{
+				System.out.println(VisionCheckHeights.lengthOfArray("Height"));
 				streamToggle = true;
 				cameraToggle = true;
 				lBack.set(-stick.getRawAxis(1));
 				lFront.set(-stick.getRawAxis(1));
 				rBack.set(stick.getRawAxis(3));
 				rFront.set(stick.getRawAxis(3));
-				//System.out.println("Left Encoder: " + lEncoder.get() + "   " + "Right Encoder: " + rEncoder.get());
 			}
 		}
 	}
