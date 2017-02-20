@@ -4,6 +4,8 @@ import java.text.ParseException;
 
 public class GyroMaster
 {
+	private static double setSpeed = 0.75;
+	
 	public static void moveForward(double speed)
 	{
 		Robot.lFront.set(speed);
@@ -20,28 +22,28 @@ public class GyroMaster
 		Robot.rBack.set(-rightSpeed);
 	}
 	
-	public static void gyroCompensation(double gyroVal, double highBound, double lowBound)
+	public static void gyroCompensation(double gyroVal, double speed,  double highBound, double lowBound)
 	{
 		Robot.tmp = Robot.tmp + gyroVal;
 		
 		if (Robot.tmp > highBound)
 		{
-			System.out.println("MOVING RIGHT or LEFT?");
-			levelDrive(0.5, 0.65, 0.10);
+			//System.out.println("MOVING RIGHT or LEFT?");
+			levelDrive(speed, 0.65, 0.10);
 		}
 		else if (Robot.tmp < lowBound)
 		{
-			System.out.println("MOVING LEFT or RIGHT?");
-			levelDrive(0.5, -0.2, 0.2);
+			//System.out.println("MOVING LEFT or RIGHT?");
+			levelDrive(speed, -0.2, 0.2);
 		}
 	}
 	
-	public static void gyroMaster(String val)
+	public static void gyroMaster(String val, double speed)
 	{
 		// System.out.println(val);
 		if (val.equals("") || val.equals(" ") || val.substring(0, 1).equals("z") || val.equals("rz") || val.equals("c"))
 		{
-			moveForward(0.5);
+			moveForward(speed);
 		}
 		else
 		{
@@ -54,8 +56,8 @@ public class GyroMaster
 				else
 				{
 					Robot.myNumber = Robot.f.parse(val).doubleValue();
-					System.out.println(Robot.myNumber);
-					gyroCompensation(Robot.myNumber, 0, 0);
+					//System.out.println(Robot.myNumber);
+					gyroCompensation(Robot.myNumber, speed, 0, 0);
 				}
 			}
 			catch (ParseException e)

@@ -54,11 +54,27 @@ public class VisionAutoMovement
 		Robot.rFront.set(direction * speed);
 	}
 
+	public static void moveDirection(int direction, double speedL, double speedR)
+	{
+		Robot.lBack.set(direction * speedL);
+		Robot.lFront.set(direction * speedL);
+		Robot.rBack.set(direction * speedR);
+		Robot.rFront.set(direction * speedR);
+	}
+	
 	public static void moveForward(double speed)
 	{
 		Robot.lBack.set(speed);
 		Robot.lFront.set(speed);
 		Robot.rBack.set(-speed);
 		Robot.rFront.set(-speed);
+	}
+	
+	public static void moveForward(double speedL, double speedR)
+	{
+		Robot.lBack.set(speedL);
+		Robot.lFront.set(speedL);
+		Robot.rBack.set(-speedR);
+		Robot.rFront.set(-speedR);
 	}
 }

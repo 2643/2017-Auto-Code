@@ -108,8 +108,7 @@ public class Robot extends IterativeRobot
 			autonomousCommand.start();
 			lEncoder.reset();
 			rEncoder.reset();
-			VisionCameraStatus.autoModeStatus(1);
-		
+			state = 0;	
 	}
 
 	/**
@@ -214,8 +213,10 @@ public class Robot extends IterativeRobot
 			else
 			{
 				System.out.println(VisionCheckHeights.lengthOfArray("Height"));
+				
 				streamToggle = true;
 				cameraToggle = true;
+				
 				lBack.set(-stick.getRawAxis(1));
 				lFront.set(-stick.getRawAxis(1));
 				rBack.set(stick.getRawAxis(3));
