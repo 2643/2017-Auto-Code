@@ -1,183 +1,111 @@
 package org.usfirst.frc.team2643.robot;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
 
 public class VisionMove
 {
-	private static int stateAuto = Robot.state;
+	private static int state = Robot.state;
 	static NetworkTable table = VisionAuto.table;
-	private static int center = 150;
-	private static int compensation = 25;
 	private static int left = 1;
 	private static int right = -1;
-	private static double highBound = 115;
 	private static boolean finishToggle = false;
 	private static double average;
+	private static Timer time = new Timer();
 
-	private static double[] centerX;
-	// TODO: add in Encoder check
+	// First Case
+	private static int moveForwardRightEncoder = 2075; // ENCODER ticks
+	private static int moveForwardLeftEncoder = -2075;
+
+	private static double moveSpeed0 = 0.75; // <--for case 0
+
+	// Second Case
+	private static double moveSpeed1 = 0.35; // <--for case 1
+
+	// Third Case
+	private static double moveSpeed2L = 0.35;// <--for case 2
+	private static double moveSpeed2R = 0.325;// <--for case 2
+
+	// Forth Case
+	private static double moveLeft1 = 0.365;
+	private static double moveRight1 = 0.355;
+
+	// Fifth Case
+	private static double moveLeft0 = 0.565;
+	private static double moveRight0 = 0.555;
+
+	// CASE 2
+	private static double highBound = 90.0;
+
+	// CASE 4
+	private static double highBound2 = 135.0;
+
+	// CASE 6
+	private static double moveLeft6 = 0.75;
+	private static double moveRight6 = 0.74;
+	private static double moveTime = 0.85;
 
 	public static void movePos(int direction)
 	{
-		switch (stateAuto)
+		switch (state)
 		{
+			/*
+			 * MOVE FORWARD to @moveForwardLeftEncoder
+			 * and @moveForwardRightEncoder
+			 */
 			case 0:
+				state = VisionAutoMovement.autoForward(moveSpeed0, moveForwardLeftEncoder, moveForwardRightEncoder, state, 1);
 				System.out.println("CASE 0");
-				while (Robot.lEncoder.get() > -2250 || Robot.rEncoder.get() < 1900)
-				{
-					String val = Robot.arduino.readString();
-					if (Robot.gyroToggle)
-					{
-						Robot.tmp = 0;
-						Robot.x = 0;
-						Robot.gyroToggle = false;
-					}
-
-					GyroMaster.gyroMaster(val, 0.85);
-				}
-
-				if (Robot.lEncoder.get() < -2250 || Robot.rEncoder.get() > 1900)
-				{
-					VisionAutoMovement.moveDirection(1, 0);
-					VisionCameraStatus.autoModeStatus(1);
-					stateAuto = 1;
-				}
 				break;
 
+			/*
+			 * TURN @Direction at speed @moveSpeed1 until it sees 2 objects
+			 */
 			case 1:
-				Robot.lEncoder.reset();
-				Robot.rEncoder.reset();
-				Robot.gyroToggle = true;
-				boolean toggle = false;
-				
-				int heightL = VisionCheckHeights.lengthOfArray("Height");
-				int centerXL = VisionCheckHeights.lengthOfArray("CenterX");
-
+				state = VisionAutoMovement.autoTurnDirection(1, moveSpeed1, moveSpeed1, direction, 2, 9);
 				System.out.println("CASE 1");
-				while (heightL < 2)
-				{
-					VisionAutoMovement.moveDirection(direction, 0.3);
-					heightL = VisionCheckHeights.lengthOfArray("Height");
-					centerXL = VisionCheckHeights.lengthOfArray("CenterX");
-
-					if (heightL >= 2 || centerXL >= 2)
-					{
-						toggle = true;
-						break;
-					}
-				}
-
-				if (toggle)
-				{
-					try
-					{
-						Thread.sleep(300);
-					}
-					catch (InterruptedException e)
-					{
-						e.printStackTrace();
-					}
-					
-					VisionAutoMovement.moveDirection(direction, 0);
-					stateAuto = 2;
-					centerX = VisionAuto.table.getNumberArray("CenterX", new double[0]);
-				}
 				break;
 
+			/*
+			 * TURN @Direction at speed @moveSpeed2L and @moveSpeed2R
+			 */
 			case 2:
-				boolean toggle1 = false;
-				average = ((centerX[0] + centerX[1]) / 2.0);
+				state = VisionAutoMovement.autoTurnDirection(2, moveSpeed2L, moveSpeed2R, direction, 3, 9);
 				System.out.println("CASE 2");
-								
-				while (!toggle1)
-				{
-					System.out.println(average);
-					if (average < center + compensation && average > center - compensation && centerX.length >= 2)
-					{
-						System.out.println("TOGGLE OFF");
-						VisionAutoMovement.moveDirection(direction, 0);
-						toggle1 = true;
-						break;
-					}
-					else if (average > center + compensation && centerX.length >= 2)
-					{
-						System.out.println("LEFT");
-						if(centerX.length < 2)
-						{
-							System.out.println("NOT TWO!");
-						}
-						average = ((centerX[0] + centerX[1]) / 2.0);
-						centerX = VisionAuto.table.getNumberArray("CenterX", new double[0]);
-						VisionAutoMovement.moveDirection(left, 0.225, 0.2);// changed
-					}
-					else if (average < center - compensation && centerX.length >= 2)
-					{
-						// System.out.println("RIGHT");
-						if(centerX.length < 2)
-						{
-							System.out.println("NOT TWO");
-						}
-						average = ((centerX[0] + centerX[1]) / 2.0);
-						centerX = VisionAuto.table.getNumberArray("CenterX", new double[0]);
-						VisionAutoMovement.moveDirection(right, 0.235, 0.265);// changed
-					}
-					else
-					{
-						VisionAutoMovement.moveDirection(direction, 0);
-						break;
-					}
-				}
-
-				if (toggle1)
-				{
-					stateAuto = 3;
-					break;
-				}
-
 				break;
 
 			case 3:
-				double[] height = VisionCheckHeights.provideArray("Height");
-				boolean toggle3 = false;
-				while (height[0] < highBound)
-				{
-					if (height[0] > highBound)
-					{
-						toggle3 = true;
-						break;
-					}
-					else
-					{
-						VisionAutoMovement.moveForward(0.27, 0.24);
-					}
-					height = VisionCheckHeights.provideArray("Height");
-				}
-
-				if (toggle3)
-				{
-					System.out.println("MOVED THE CERTAIN DISTANCE!");
-					VisionAutoMovement.moveForward(0);
-					finishToggle = true;
-					toggle1 = false;
-					stateAuto = 4;
-					Robot.lEncoder.reset();
-					Robot.rEncoder.reset();
-				}
+				state = VisionAutoMovement.autoCal(moveLeft1, moveRight1, state, 4, 9);
+				System.out.println("Case 3");
 				break;
 
 			case 4:
-				System.out.println("CASE 4");
+				state = VisionAutoMovement.autoForward(moveLeft0, moveRight0, highBound, state, 5, 9);
+				System.out.println("Case 4");
+				break;
 
-				while (Robot.lEncoder.get() < -100 || Robot.rEncoder.get() < 80)
-				{
-					VisionAutoMovement.moveForward(0.23);
-				}
+			case 5:
+				state = VisionAutoMovement.autoCal(moveLeft1, moveRight1, state, 6, 9);
+				System.out.println("Case 5");
+				break;
 
-				if (Robot.lEncoder.get() > -100 || Robot.rEncoder.get() > 80)
-				{
-					VisionAutoMovement.moveDirection(1, 0);
-					System.out.println("END");
-				}
+			case 6:
+				state = VisionAutoMovement.autoForward(moveLeft0, moveRight0, highBound2, state, 7, 9);
+				System.out.println("Case 6");
+				break;
+
+			case 7:
+				state = VisionAutoMovement.autoCal(moveLeft1, moveRight1, state, 8, 9);
+				System.out.println("Case 7");
+				break;
+
+			case 8:
+				state = VisionAutoMovement.autoForwardTimed(moveLeft6, moveRight6, moveTime, state, 9);
+				System.out.println("Case 8");
+				break;
+
+			case 9:
+				System.out.println("Case 9");
 				break;
 		}
 	}

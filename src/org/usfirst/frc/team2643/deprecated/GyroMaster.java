@@ -1,10 +1,8 @@
-package org.usfirst.frc.team2643.robot;
-
-import java.text.ParseException;
+package org.usfirst.frc.team2643.deprecated;
 
 public class GyroMaster
 {
-	private static double setSpeed = 0.75;
+	/*private static double setSpeed = 0.75;
 	
 	public static void moveForward(double speed)
 	{
@@ -28,12 +26,12 @@ public class GyroMaster
 		
 		if (Robot.tmp > highBound)
 		{
-			//System.out.println("MOVING RIGHT or LEFT?");
-			levelDrive(speed, 0.65, 0.10);
+			System.out.println("MOVING RIGHT or LEFT?");
+			levelDrive(speed, 0.35, 0.17);
 		}
 		else if (Robot.tmp < lowBound)
 		{
-			//System.out.println("MOVING LEFT or RIGHT?");
+			System.out.println("MOVING LEFT or RIGHT?");
 			levelDrive(speed, -0.2, 0.2);
 		}
 	}
@@ -65,6 +63,6 @@ public class GyroMaster
 				e.printStackTrace();
 			}
 		}
-	}
+	}*/
 	
 }

@@ -2,15 +2,13 @@
 package org.usfirst.frc.team2643.robot;
 
 
-import java.text.NumberFormat;
-
 import org.usfirst.frc.team2643.robot.subsystems.ExampleSubsystem;
+
+import com.ctre.CANTalon;
 
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.SerialPort;
-import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
@@ -29,17 +27,18 @@ public class Robot extends IterativeRobot
 	public static OI oi;
 	
 	Command autonomousCommand;
-	
-	// ** Arduino code
-	final static int baut = 230400;
-	static SerialPort arduino = new SerialPort(baut, SerialPort.Port.kUSB);
 
 	Joystick stick = new Joystick(0);
-
-	static Spark lBack = new Spark(2);
-	static Spark lFront = new Spark(3);
-	static Spark rBack = new Spark(0);
-	static Spark rFront = new Spark(1);
+	
+	static CANTalon lBack = new CANTalon(0);
+	static CANTalon lFront = new CANTalon(1);
+	static CANTalon rBack = new CANTalon(3);
+	static CANTalon rFront = new CANTalon(2);
+	
+	/*static Spark lBack = new Spark(2);
+	static Spark lFront = new Spark(5);
+	static Spark rBack = new Spark(1);
+	static Spark rFront = new Spark(6);*/
 
 	static Encoder lEncoder = new Encoder(1, 2);
 	static Encoder rEncoder = new Encoder(3, 4);
@@ -53,8 +52,7 @@ public class Robot extends IterativeRobot
 	
 	static boolean isAuto = true;
 	static Timer time = new Timer();
-	
-	static NumberFormat f = NumberFormat.getInstance();
+
 	static double myNumber = 0;
 	static double tmp = 0;
 
@@ -62,6 +60,8 @@ public class Robot extends IterativeRobot
 	static boolean gyroToggle = true;
 
 	static int x = 0;
+	
+	static String autoMode;
 	
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -71,6 +71,8 @@ public class Robot extends IterativeRobot
 	public void robotInit()
 	{
 		oi = new OI();
+		//VisionCameraStatus.autoModeStatus(1);
+		//SmartDashboard.putString("Auto Mode", autoMode);
 	}
 
 	/**
@@ -109,6 +111,7 @@ public class Robot extends IterativeRobot
 			lEncoder.reset();
 			rEncoder.reset();
 			state = 0;	
+			VisionCameraStatus.autoModeStatus(1);
 	}
 
 	/**
@@ -119,7 +122,7 @@ public class Robot extends IterativeRobot
 	{
 		while(isAutonomous())
 		{
-			VisionAuto.positionForAuto("Right");
+			VisionAuto.positionForAuto("l");
 		}
 	}
 
@@ -147,37 +150,12 @@ public class Robot extends IterativeRobot
 			boolean cameraToggle = true;
 			boolean streamToggle = true;
 			
-			if (stick.getRawButton(4))
-			{
-				//starts vision
-				while(toggle)
-				{
-					if(stick.getRawButton(2))
-						toggle = false;
-					if(cameraToggle)
-					{
-						//System.out.println("toggling once");
-						VisionCameraStatus.cameraStatus(1);
-						cameraToggle = false;
-						try
-						{
-							Thread.sleep(3000);
-						}
-						catch (InterruptedException e)
-						{
-							e.printStackTrace();
-						}
-					}
-					//System.out.println("Vision");
-					VisionAuto.startVision();
-				}
-			}
-			else if(stick.getRawButton(6))
+			if(stick.getRawButton(1))
 			{
 				//just start the vision no scanner
 				VisionCameraStatus.cameraStatus(1);
 			}
-			else if(stick.getRawButton(3))
+			else if(stick.getRawButton(2))
 			{
 				//starts stream
 				if(streamToggle)
@@ -186,45 +164,43 @@ public class Robot extends IterativeRobot
 					streamToggle = false;
 				}	
 			}
-			else if(stick.getRawButton(1))
+			else if (stick.getRawButton(4))
 			{
-				//reseters
-				toggle = true;
-				gyroToggle = true;
+				time.stop(); 
+				time.reset();
 			}
-			/*else if(stick.getRawButton(5))
-			{
-				//gyro drive
-				while (stick.getRawButton(5))
-				{
-					
-					String val = arduino.readString();
-					if (gyroToggle)
-					{
-						//System.out.println("once right?");
-						tmp = 0;
-						x = 0;
-						gyroToggle = false;
-					}
-
-					GyroMaster.gyroMaster(val);
-				}
-			}*/
 			else
-			{
-				System.out.println(VisionCheckHeights.lengthOfArray("Height"));
-				
+			{				
 				streamToggle = true;
 				cameraToggle = true;
 				
+				//numX = calculateX(accel.getX(), numX);
+				//numY = calculateY(accel.getY(), numY);
+				
+				//System.out.println(Math.abs(numX) + Math.abs(numY));
+				
 				lBack.set(-stick.getRawAxis(1));
 				lFront.set(-stick.getRawAxis(1));
-				rBack.set(stick.getRawAxis(3));
-				rFront.set(stick.getRawAxis(3));
+				rBack.set(stick.getRawAxis(5));
+				rFront.set(stick.getRawAxis(5));
 			}
 		}
 	}
 
+	public double calculateX(double val, double average)
+	{
+		double num = average;
+		average = ((val * 3) + num) / 4.0;
+		return average;
+	}
+	
+	public double calculateY(double val, double average)
+	{
+		double num = average;
+		average = ((val * 3) + num) / 4.0;
+		return average;
+	}
+	
 	/**
 	 * This function is called periodically during test mode
 	 */
