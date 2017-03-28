@@ -31,41 +31,45 @@ public class VisionMoveCenter
 	private static double[] height = VisionProvideData.provideArray("Height");
 	private static double avg = VisionProvideData.provideNum("Average");
 
+	public static void resetState(){
+		state = 0;
+	}
+	
 	public static void moveToCenter()
 	{
 		switch (state)
 		{
 			case 0:
-				VisionAutoMovement.autoForward(moveLeft0, moveRight0, highBound, state, 1, 7);
+				state = VisionAutoMovement.autoForward(moveLeft0, moveRight0, highBound, state, 1, 7);
 				System.out.println("Case 1");
 				break;
 			case 1:
-				VisionAutoMovement.autoCal(moveLeft1, moveRight1, state, 2, 7);
+				state = VisionAutoMovement.autoCal(moveLeft1, moveRight1, state, 2, 7);
 				System.out.println("Case 2");
 				break;
 
 			case 2:
-				VisionAutoMovement.autoForward(moveLeft0, moveRight0, highBound2, state, 3, 7);
+				state = VisionAutoMovement.autoForward(moveLeft0, moveRight0, highBound2, state, 3, 7);
 				System.out.println("Case 3");
 				break;
 
 			case 3:
-				VisionAutoMovement.autoCal(moveLeft1, moveRight1, state, 4, 7);
+				state = VisionAutoMovement.autoCal(moveLeft1, moveRight1, state, 4, 7);
 				System.out.println("Case 4");
 				break;
 
 			case 4:
-				VisionAutoMovement.autoForward(moveLeft0, moveRight0, highBound3, state, 5, 7);
+				state = VisionAutoMovement.autoForward(moveLeft0, moveRight0, highBound3, state, 5, 7);
 				System.out.println("Case 5");
 				break;
 
 			case 5:
-				VisionAutoMovement.autoCal(moveLeft1, moveRight1, state, 6, 7);
+				state = VisionAutoMovement.autoCal(moveLeft1, moveRight1, state, 6, 7);
 				System.out.println("Case 6");
 				break;
 
 			case 6:
-				VisionAutoMovement.autoForwardTimed(moveLeft6, moveRight6, moveTime, state, 7);
+				state = VisionAutoMovement.autoForwardTimed(moveLeft6, moveRight6, moveTime, state, 7);
 				break;
 				
 			case 7:

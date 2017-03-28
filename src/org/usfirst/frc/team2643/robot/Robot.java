@@ -110,8 +110,9 @@ public class Robot extends IterativeRobot
 			autonomousCommand.start();
 			lEncoder.reset();
 			rEncoder.reset();
-			state = 0;	
+			VisionMove.resetState();	
 			VisionCameraStatus.autoModeStatus(1);
+			VisionMoveCenter.resetState();
 	}
 
 	/**
@@ -145,6 +146,7 @@ public class Robot extends IterativeRobot
 	{
 		while (isEnabled() && isOperatorControl())
 		{
+			System.out.println("TeleOpPeriodic");
 			// vision assisted auto
 			isAuto = false;
 			boolean cameraToggle = true;
