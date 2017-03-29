@@ -145,8 +145,7 @@ public class VisionAutoMovement
 	 * @param heightL
 	 * @param nextState
 	 */
-	public static int autoForward(double moveSpeedL, double moveSpeedR, double heightL, int state, int nextState,
-			int breakState)
+	public static int autoForward(double moveSpeedL, double moveSpeedR, double heightL, int state, int nextState, int breakState)
 	{
 		boolean toggle = false;
 		moveForward(moveSpeedL, moveSpeedR);

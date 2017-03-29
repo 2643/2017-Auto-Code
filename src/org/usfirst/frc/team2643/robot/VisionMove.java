@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.networktables.NetworkTable;
 
 public class VisionMove
 {
-	private static int state = Robot.state;
+	private static int state;
 	static NetworkTable table = VisionAuto.table;
 	private static int left = 1;
 	private static int right = -1;
@@ -45,8 +45,13 @@ public class VisionMove
 	private static double moveRight6 = 0.74;
 	private static double moveTime = 0.85;
 
+	public static void resetState(){
+		state = 0;
+	}
+	
 	public static void movePos(int direction)
 	{
+		System.out.print("Direction: " + direction + "	" + state);
 		switch (state)
 		{
 			/*
@@ -76,7 +81,7 @@ public class VisionMove
 
 			case 3:
 				state = VisionAutoMovement.autoCal(moveLeft1, moveRight1, state, 4, 9);
-				System.out.println("Case 3");
+				System.out.println("Case 3" + "	" +  state);
 				break;
 
 			case 4:
@@ -105,7 +110,7 @@ public class VisionMove
 				break;
 
 			case 9:
-				System.out.println("Case 9");
+				System.out.print("Case 9--");
 				break;
 		}
 	}
